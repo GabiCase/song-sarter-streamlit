@@ -18,7 +18,6 @@ from utils.chat_gpt_manager import (
 )
 from utils.spotify_manager import (
     get_similar_songs,
-    get_track_id_spotify,
     get_audio_analysis,
     get_audio_features,
     get_song_and_artist
@@ -65,9 +64,32 @@ def main():
     pc = initialize_pinecone()
     index = setup_index(pc)
     index_name= pc.list_indexes().indexes[0].name
+
+    api_key = os.getenv("OPENAI_API_KEY")
+
+    # Configurar la clave de API en OpenAI
+    OpenAI.api_key = api_key
+
+    # Convert text into vectors using embeddings
+    client = OpenAI(
+    api_key=api_key,
+    )
     
     # Título principal de la app
-    st.title("🎵 Song-starter: Inspiración musical 🎵")
+    st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
+    
+    .custom-title {
+        font-family: 'Roboto', sans-serif;
+        font-size: 40px;
+        color: #333;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Usar el estilo CSS personalizado en el título
+    st.markdown('<h1 class="custom-title">🎵 Song-starter: Empieza a componer 🎵</h1>', unsafe_allow_html=True)
     st.markdown("**Crea nuevas canciones inspiradas en tus referencias**")
 
     # Recoger la entrada del usuario (canción y artista)
@@ -243,16 +265,6 @@ def main():
         input_expanded=to_embbed_text_column(input_expanded)
 
         df_vectorial_expanded=to_embbed_text_column(df_vectorial_expanded)
-
-        api_key = os.getenv("OPENAI_API_KEY")
-
-        # Configurar la clave de API en OpenAI
-        OpenAI.api_key = api_key
-
-        # Convert text into vectors using embeddings
-        client = OpenAI(
-        api_key=api_key,
-        )
 
         input_expanded['embedding'] = input_expanded['to_embbed_text'].apply(lambda x: client.embeddings.create(
         model="text-embedding-3-small",

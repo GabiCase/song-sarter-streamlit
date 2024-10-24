@@ -215,18 +215,6 @@ def drop_columns_with_many_nulls(df, threshold):
     return df
 
 def expand_and_remove_original_columns(df, column_names):
-    """
-    Expande las columnas en el DataFrame df según las columnas especificadas en column_names,
-    convierte las cadenas de texto que representan listas en listas reales y elimina las columnas originales.
-    Solo se expande hasta el número máximo de elementos presentes en cada columna.
-    
-    Args:
-    df (pd.DataFrame): El DataFrame original.
-    column_names (list): Lista de nombres de columnas que contienen listas de valores como cadenas de texto.
-    
-    Returns:
-    pd.DataFrame: El DataFrame expandido con nuevas columnas.
-    """
     for column in column_names:
         # Verificar si la columna existe en el DataFrame
         if column in df.columns:
