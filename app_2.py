@@ -82,8 +82,8 @@ def main():
     @import url('https://fonts.googleapis.com/css2?family=Prata&family=SUSE:wght@100..800&display=swap');
 
     .custom-title {
-        font-family: 'Roboto', sans-serif;
-        font-size: 40px;
+        font-family: 'Prata', serif;
+        font-size: 50px;
         color: #333;
     }
     </style>
