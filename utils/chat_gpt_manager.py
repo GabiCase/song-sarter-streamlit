@@ -121,7 +121,7 @@ def create_song(lyrics_list, chord_wheels, details, model="gpt-4o", temperature=
     ],
     temperature=temperature,
     max_tokens=max_tokens,
-    top_p=1,
+    top_p=1.1,
     frequency_penalty=0,
     presence_penalty=0,
     response_format={
