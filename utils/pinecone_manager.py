@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import pandas as pd
 import os
 from pinecone import Pinecone, ServerlessSpec
+import streamlit as st
 
 
 # Carga las variables de entorno desde el archivo .env
@@ -10,8 +11,13 @@ load_dotenv()
 
 from pinecone import ServerlessSpec
 
-PINECONE_API_KEY = os.getenv('PINECONE_API_KEY')
-PINECONE_ENVIRONMENT=  os.getenv('PINECONE_ENVIRONMENT')
+#PINECONE_API_KEY = os.getenv('PINECONE_API_KEY')
+#PINECONE_ENVIRONMENT=  os.getenv('PINECONE_ENVIRONMENT')
+
+
+PINECONE_API_KEY = st.secrets['PINECONE_API_KEY']
+PINECONE_ENVIRONMENT=  st.secrets['PINECONE_ENVIRONMENT']
+
 # Initialize a client
 pc = Pinecone(api_key=PINECONE_API_KEY)
 
@@ -20,8 +26,6 @@ index_name = "songstarter"
 index = pinecone.Index(index_name, host=PINECONE_API_KEY, environment=PINECONE_ENVIRONMENT) 
 
 def initialize_pinecone():
-    PINECONE_API_KEY = os.getenv('PINECONE_API_KEY')
-    PINECONE_ENVIRONMENT = os.getenv('PINECONE_ENVIRONMENT')
     pc = Pinecone(api_key=PINECONE_API_KEY)
     return pc
 

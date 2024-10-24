@@ -79,7 +79,6 @@ def main():
     st.markdown("""
     <style>
 
-
     @import url('https://fonts.googleapis.com/css2?family=Prata&family=SUSE:wght@100..800&display=swap');
 
     .custom-title {
@@ -91,7 +90,7 @@ def main():
     """, unsafe_allow_html=True)
 
     # Usar el estilo CSS personalizado en el título
-    st.markdown('<h1 class="custom-title">🎵 Song-starter: Empieza a componer 🎵</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="custom-title">🎵 Song-starter 🎵</h1>', unsafe_allow_html=True)
     st.markdown("**Crea nuevas canciones inspiradas en tus referencias**")
 
     # Recoger la entrada del usuario (canción y artista)
