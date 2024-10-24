@@ -2,6 +2,9 @@
 
 Song Starter es una aplicación que genera nuevas canciones inspiradas en canciones existentes. Utiliza APIs de **Spotify**, **OpenAI**, y **Pinecone** para analizar canciones y generar acordes, letras y características armónicas similares.
 
+[Ver presentación](https://www.canva.com/design/DAGUfInaVk4/zOztHx9kFZqp-x3njacQsA/view?utm_content=DAGUfInaVk4&utm_campaign=designshare&utm_medium=link&utm_source=editor)
+
+
 ## Características principales
 
 1. **Recomendación de canciones similares**: A partir de una canción dada, la app sugiere canciones con acordes y características armónicas parecidas.
