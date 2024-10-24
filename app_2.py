@@ -79,11 +79,13 @@ def main():
     st.markdown("""
     <style>
 
-    @import url('https://fonts.googleapis.com/css2?family=Prata&family=SUSE:wght@100..800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Prata&family=SUSE:wght@100..800&family=Space+Grotesk:wght@300..700&display=swap');
 
     .custom-title {
-        font-family: 'Prata', serif;
-        font-size: 50px;
+        font-family: "Space Grotesk", sans-serif;
+        font-optical-sizing: auto;
+        font-size: 54px;
+        font-weight:600;
         color: #333;
     }
     </style>
@@ -91,7 +93,8 @@ def main():
 
     # Usar el estilo CSS personalizado en el título
     st.markdown('<h1 class="custom-title">🎵 Song-starter 🎵</h1>', unsafe_allow_html=True)
-    st.markdown("**Crea nuevas canciones inspiradas en tus referencias**")
+    st.markdown("##### Crea nuevas canciones inspiradas en tus referencias")
+
 
     # Recoger la entrada del usuario (canción y artista)
     with st.sidebar:
@@ -111,8 +114,16 @@ def main():
         # Crear DataFrame inicial con información de la canción
         input_data = pd.DataFrame({'id': [input_track_id], 'name': input_song, 'artists': input_artist})
 
-        st.markdown(f"### 🎶 Si te gusta **{input_song}** de **{input_artist}**")
-        st.write("### Puedo recomendarte:")
+        st.markdown("""
+        <style>
+        .small-text {
+        font-size: 16px;  /* Ajusta el tamaño que prefieras */
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+        # Usar el estilo CSS personalizado en tu texto
+        st.markdown(f'<p class="small-text">Si te gusta <strong>{input_song}</strong> de <strong>{input_artist}</strong> 🎶<br>Puedo recomendarte:</p>', unsafe_allow_html=True)
 
         with st.spinner('Buscando recomendaciones...'):
             # Obtener canciones similares (puede tardar un poco)
@@ -129,7 +140,6 @@ def main():
                 st.markdown(name)  # Muestra el nombre y artista en negrita
             time.sleep(2)  # Pausa de 2 segundos antes de mostrar la siguiente
 
-        st.write("")
         st.write("")
 
         # Crear un contenedor para el mensaje temporal
@@ -173,199 +183,204 @@ def main():
 
         # Añadir espacio para mejorar la separación visual
         st.write("")
-        st.write("")
         # Mensaje personalizado sobre el tema de interés
-        st.markdown("### 🎵 Así que este es el tema que te interesa:")
-        st.markdown(f"*{theme}...*")
+        st.markdown("### Así que este es el tema que te interesa:")
+        st.markdown(f"{theme}... ")
 
-        # Filtrar acordes no nulos de input_data
-        input_data['chords'].dropna(inplace=True)
-        input_data = input_data[input_data['chords'].apply(lambda x: x != [])]
-        
-        # Obtener características y análisis de audio para las canciones similares
-        get_audio_features(df)
-        get_audio_analysis(df)
-        insert_lyrics_db(df) 
+        tempo_message_placeholder = st.empty()
 
-        # Preparar DataFrame vectorial
-        df_vectorial = df.copy()
-        df_vectorial['chords'].dropna(inplace=True)
-        df_vectorial = df_vectorial[df_vectorial['chords'].apply(lambda x: x != [])]
+        with st.spinner('Ya casi hemos terminado...'):
+            # Filtrar acordes no nulos de input_data
+            input_data['chords'].dropna(inplace=True)
+            input_data = input_data[input_data['chords'].apply(lambda x: x != [])]
+            
+            # Obtener características y análisis de audio para las canciones similares
+            get_audio_features(df)
+            get_audio_analysis(df)
+            insert_lyrics_db(df) 
 
-        # Mapa de acordes
-        chord_map = {
-            'C': 0, 'C#': 1, 'Db': 1, 'D': 2, 'D#': 3, 'Eb': 3, 'E': 4, 
-            'F': 5, 'F#': 6, 'Gb': 6, 'G': 7, 'G#': 8, 'Ab': 8, 'A': 9, 
-            'A#': 10, 'Bb': 10, 'B': 11
-        }
+            # Preparar DataFrame vectorial
+            df_vectorial = df.copy()
+            df_vectorial['chords'].dropna(inplace=True)
+            df_vectorial = df_vectorial[df_vectorial['chords'].apply(lambda x: x != [])]
 
-        input_data['chords_1'] = input_data['chords'].apply(lambda x: x[:4]) 
-        input_data['chords_2'] = input_data['chords'].apply(lambda x: x[4:])
+            # Mapa de acordes
+            chord_map = {
+                'C': 0, 'C#': 1, 'Db': 1, 'D': 2, 'D#': 3, 'Eb': 3, 'E': 4, 
+                'F': 5, 'F#': 6, 'Gb': 6, 'G': 7, 'G#': 8, 'Ab': 8, 'A': 9, 
+                'A#': 10, 'Bb': 10, 'B': 11
+            }
 
-        input_data['chords_1'] = input_data['chords_1'].apply(standardize_chord_symbols)
-        input_data['chords_2'] = input_data['chords_2'].apply(standardize_chord_symbols)
+            input_data['chords_1'] = input_data['chords'].apply(lambda x: x[:4]) 
+            input_data['chords_2'] = input_data['chords'].apply(lambda x: x[4:])
 
-        input_data['chords_1_numeric'] = input_data['chords_1'].apply(convert_chords_with_minor)
-        input_data['chords_2_numeric'] = input_data['chords_2'].apply(convert_chords_with_minor)
+            input_data['chords_1'] = input_data['chords_1'].apply(standardize_chord_symbols)
+            input_data['chords_2'] = input_data['chords_2'].apply(standardize_chord_symbols)
 
-        col_chords = ['chords_1_numeric', 'chords_2_numeric']
+            input_data['chords_1_numeric'] = input_data['chords_1'].apply(convert_chords_with_minor)
+            input_data['chords_2_numeric'] = input_data['chords_2'].apply(convert_chords_with_minor)
 
-        # Aplicar la función a cada fila
-        for col in col_chords:
-            input_data[f'normal_{col}'] = input_data.apply(lambda row: transpose_chords_to_key(row, col), axis=1)
+            col_chords = ['chords_1_numeric', 'chords_2_numeric']
 
-        for col in col_chords:
-            input_data[f'diff_{col}'] = input_data.apply(lambda row: calc_diff(row[col]), axis=1)
+            # Aplicar la función a cada fila
+            for col in col_chords:
+                input_data[f'normal_{col}'] = input_data.apply(lambda row: transpose_chords_to_key(row, col), axis=1)
 
-        input_data.replace('\n', ' ', regex=True, inplace=True)
+            for col in col_chords:
+                input_data[f'diff_{col}'] = input_data.apply(lambda row: calc_diff(row[col]), axis=1)
 
-        df_vectorial['chords_1'] = df_vectorial['chords'].apply(lambda x: x[:4]) 
-        df_vectorial['chords_2'] = df_vectorial['chords'].apply(lambda x: x[4:])
-        df_vectorial.drop(columns=['chords'], inplace=True)
+            input_data.replace('\n', ' ', regex=True, inplace=True)
 
-        # Nos ocupamos de bemoles o sostenidos para estandarizarlos
-        df_vectorial['chords_1'] = df_vectorial['chords_1'].apply(standardize_chord_symbols)
-        df_vectorial['chords_2'] = df_vectorial['chords_2'].apply(standardize_chord_symbols)
+            df_vectorial['chords_1'] = df_vectorial['chords'].apply(lambda x: x[:4]) 
+            df_vectorial['chords_2'] = df_vectorial['chords'].apply(lambda x: x[4:])
+            df_vectorial.drop(columns=['chords'], inplace=True)
 
-        # Convertimos los acordes a valores numéricos
-        df_vectorial['chords_1_numeric'] = df_vectorial['chords_1'].apply(convert_chords_with_minor)
-        df_vectorial['chords_2_numeric'] = df_vectorial['chords_2'].apply(convert_chords_with_minor)
+            # Nos ocupamos de bemoles o sostenidos para estandarizarlos
+            df_vectorial['chords_1'] = df_vectorial['chords_1'].apply(standardize_chord_symbols)
+            df_vectorial['chords_2'] = df_vectorial['chords_2'].apply(standardize_chord_symbols)
 
-        col_chords = ['chords_1_numeric', 'chords_2_numeric']
+            # Convertimos los acordes a valores numéricos
+            df_vectorial['chords_1_numeric'] = df_vectorial['chords_1'].apply(convert_chords_with_minor)
+            df_vectorial['chords_2_numeric'] = df_vectorial['chords_2'].apply(convert_chords_with_minor)
 
-        # Aplicar la función a cada fila
-        for col in col_chords:
-            df_vectorial[f'normal_{col}'] = df_vectorial.apply(lambda row: transpose_chords_to_key(row, col), axis=1)
+            col_chords = ['chords_1_numeric', 'chords_2_numeric']
 
-        for col in col_chords:
-            df_vectorial[f'diff_{col}'] = df_vectorial.apply(lambda row: calc_diff(row[col]), axis=1)
+            # Aplicar la función a cada fila
+            for col in col_chords:
+                df_vectorial[f'normal_{col}'] = df_vectorial.apply(lambda row: transpose_chords_to_key(row, col), axis=1)
 
-        df_vectorial.replace('\n', ' ', regex=True, inplace=True)
-        #elimino los saltos de línea en la letra y temática de la canción
+            for col in col_chords:
+                df_vectorial[f'diff_{col}'] = df_vectorial.apply(lambda row: calc_diff(row[col]), axis=1)
 
-        df_vectorial = df_vectorial.fillna(0)
+            df_vectorial.replace('\n', ' ', regex=True, inplace=True)
+            #elimino los saltos de línea en la letra y temática de la canción
 
-        # Especificar las columnas que contienen listas (excepto 'embedding')
-        columns_to_expand = ['instruments', 'chords_1', 'chords_2', 
-                        'chords_1_numeric', 'chords_2_numeric', 
-                        'normal_chords_1_numeric', 'normal_chords_2_numeric', 
-                        'diff_chords_1_numeric', 'diff_chords_2_numeric']
-        
-        input_expanded = expand_and_remove_original_columns(input_data, columns_to_expand)
+            df_vectorial = df_vectorial.fillna(0)
 
-        #elimino las columnas que tengan solo valores nulos
-        input_expanded = input_expanded.dropna(axis=1, how='all')
+            # Especificar las columnas que contienen listas (excepto 'embedding')
+            columns_to_expand = ['instruments', 'chords_1', 'chords_2', 
+                            'chords_1_numeric', 'chords_2_numeric', 
+                            'normal_chords_1_numeric', 'normal_chords_2_numeric', 
+                            'diff_chords_1_numeric', 'diff_chords_2_numeric']
+            
+            input_expanded = expand_and_remove_original_columns(input_data, columns_to_expand)
 
-        df_vectorial_expanded = expand_and_remove_original_columns(df_vectorial, columns_to_expand)
+            #elimino las columnas que tengan solo valores nulos
+            input_expanded = input_expanded.dropna(axis=1, how='all')
 
-        #elimino las columnas que tengan solo valores nulos
-        df_vectorial_expanded = df_vectorial_expanded.dropna(axis=1, how='all')
+            df_vectorial_expanded = expand_and_remove_original_columns(df_vectorial, columns_to_expand)
 
-        drop_columns_with_many_nulls(df_vectorial_expanded, 10)
+            #elimino las columnas que tengan solo valores nulos
+            df_vectorial_expanded = df_vectorial_expanded.dropna(axis=1, how='all')
 
-        input_expanded=to_embbed_text_column(input_expanded)
+            drop_columns_with_many_nulls(df_vectorial_expanded, 10)
 
-        df_vectorial_expanded=to_embbed_text_column(df_vectorial_expanded)
+            input_expanded=to_embbed_text_column(input_expanded)
 
-        input_expanded['embedding'] = input_expanded['to_embbed_text'].apply(lambda x: client.embeddings.create(
-        model="text-embedding-3-small",
-        input=x
-        ).data[0].embedding)
+            df_vectorial_expanded=to_embbed_text_column(df_vectorial_expanded)
 
-        input_expanded.drop(columns=['to_embbed_text'], inplace=True)
+            input_expanded['embedding'] = input_expanded['to_embbed_text'].apply(lambda x: client.embeddings.create(
+            model="text-embedding-3-small",
+            input=x
+            ).data[0].embedding)
 
-        #para cada fila del dataframe, sacar el vector de embedding de la columna "to_embbed_text"
-        df_vectorial_expanded['embedding'] = df_vectorial_expanded['to_embbed_text'].apply(lambda x: client.embeddings.create(
-        model="text-embedding-3-small",
-        input=x
-        ).data[0].embedding)
+            input_expanded.drop(columns=['to_embbed_text'], inplace=True)
 
-        df_vectorial_expanded.drop(columns=['to_embbed_text'], inplace=True)
+            #para cada fila del dataframe, sacar el vector de embedding de la columna "to_embbed_text"
+            df_vectorial_expanded['embedding'] = df_vectorial_expanded['to_embbed_text'].apply(lambda x: client.embeddings.create(
+            model="text-embedding-3-small",
+            input=x
+            ).data[0].embedding)
 
-        df_vectorial_expanded = df_vectorial_expanded.rename(columns={'embedding': 'values'})
+            df_vectorial_expanded.drop(columns=['to_embbed_text'], inplace=True)
 
-        # Procesar el DataFrame
-        df_vectorial_expanded = create_metadata_column(df_vectorial_expanded)
-        df_vectorial_expanded = clean_metadata_column(df_vectorial_expanded)
-        df_para_pinecone = create_dataframe_for_pinecone(df_vectorial_expanded)
-        insert_into_pinecone(df_para_pinecone, index)
+            df_vectorial_expanded = df_vectorial_expanded.rename(columns={'embedding': 'values'})
 
-        # Get the response from the query
-        response = realizar_consulta(client, input_expanded, index, top_k=5)
+            # Procesar el DataFrame
+            df_vectorial_expanded = create_metadata_column(df_vectorial_expanded)
+            df_vectorial_expanded = clean_metadata_column(df_vectorial_expanded)
+            df_para_pinecone = create_dataframe_for_pinecone(df_vectorial_expanded)
+            insert_into_pinecone(df_para_pinecone, index)
 
-        # Extract the matches from the response
-        response_matches = response['matches']
+            # Get the response from the query
+            response = realizar_consulta(client, input_expanded, index, top_k=5)
 
-        # Initialize lists for details and tempos
-        details = []
-        tempos = []
+            # Extract the matches from the response
+            response_matches = response['matches']
 
-        # Process the response matches
-        for match in response_matches:
-            # Extract metadata
-            instruments_1 = match['metadata'].get('instruments_1', 'Unknown')
-            instruments_2 = match['metadata'].get('instruments_2', 'Unknown')
-            tempo = match['metadata'].get('tempo', 0)
-            speechiness = match['metadata'].get('speechiness', 0)
-            loudness = match['metadata'].get('loudness', 0)
+            # Initialize lists for details and tempos
+            details = []
+            tempos = []
 
-            # Append details in the desired format to be used later
-            details.append(f"Intruments: {instruments_1} {instruments_2}, Tempo: {tempo}, Speechiness: {speechiness}, Loudness: {loudness}")
+            # Process the response matches
+            for match in response_matches:
+                # Extract metadata
+                instruments_1 = match['metadata'].get('instruments_1', 'Unknown')
+                instruments_2 = match['metadata'].get('instruments_2', 'Unknown')
+                tempo = match['metadata'].get('tempo', 0)
+                speechiness = match['metadata'].get('speechiness', 0)
+                loudness = match['metadata'].get('loudness', 0)
 
-            # Collect the tempo values for immediate processing
-            tempos.append(float(tempo))
+                # Append details in the desired format to be used later
+                details.append(f"Intruments: {instruments_1} {instruments_2}, Tempo: {tempo}, Speechiness: {speechiness}, Loudness: {loudness}")
 
-        # Get the minimum and maximum tempo values (e.g., the first two tempos)
-        tempo_min = min(tempos)  # Smallest of the first two tempos
-        tempo_max = max(tempos)  # Largest of the first two tempos
+                # Collect the tempo values for immediate processing
+                tempos.append(float(tempo))
 
-        # Display the tempo suggestion (you can now use the details list later as needed)
-        st.write(f"Se me ocurre que el tempo esté entre {tempo_min:.0f} y {tempo_max:.0f}.")
+            # Get the minimum and maximum tempo values (e.g., the first two tempos)
+            tempo_min = min(tempos)  # Smallest of the first two tempos
+            tempo_max = max(tempos)  # Largest of the first two tempos
 
-        diff_chord_2= input_data['diff_chords_2_numeric'].iloc[0]
-        diff_chord_1= input_data['diff_chords_1_numeric'].iloc[0]
+            # Display the tempo suggestion (you can now use the details list later as needed)
+            tempo_message_placeholder.markdown(f"Se me ocurre que el tempo esté entre **{tempo_min:.0f}** y **{tempo_max:.0f}**.")
 
-        chords_query = f"A song with a similar progession and distance (diff) in chords to {input_data['chords_1'][0]},y diff chords {diff_chord_2},{diff_chord_1}."
-        theme_embedding = client.embeddings.create(
-        model="text-embedding-3-small",
-        input=chords_query
-        ).data[0].embedding
+            diff_chord_2= input_data['diff_chords_2_numeric'].iloc[0]
+            diff_chord_1= input_data['diff_chords_1_numeric'].iloc[0]
 
-        chords_query = index.query(vector=theme_embedding, top_k=5, include_metadata=True)
+            chords_query = f"A song with a similar progession and distance (diff) in chords to {input_data['chords_1'][0]},y diff chords {diff_chord_2},{diff_chord_1}."
+            theme_embedding = client.embeddings.create(
+            model="text-embedding-3-small",
+            input=chords_query
+            ).data[0].embedding
 
-        chords_query_ = chords_query['matches']
+            chords_query = index.query(vector=theme_embedding, top_k=5, include_metadata=True)
 
-        chord_wheels=[]
-        for match in chords_query_:
-            chord_wheels.append(f"Chord wheel: {match['metadata']['chords_1_1']} {match['metadata']['chords_1_2']} {match['metadata']['chords_1_3']} {match['metadata']['chords_1_4']}, {match['metadata']['chords_2_1']} {match['metadata']['chords_2_2']} {match['metadata']['chords_2_3']} {match['metadata']['chords_2_4']}")
+            chords_query_ = chords_query['matches']
 
-        # Crear el embedding de la nueva query
-        lyrics_query = f"Give me a similar theme song to {input_data['theme'][0]}"
-        theme_embedding = client.embeddings.create(
-        model="text-embedding-3-small",
-        input=lyrics_query
-        ).data[0].embedding
+            chord_wheels=[]
+            for match in chords_query_:
+                chord_wheels.append(f"Chord wheel: {match['metadata']['chords_1_1']} {match['metadata']['chords_1_2']} {match['metadata']['chords_1_3']} {match['metadata']['chords_1_4']}, {match['metadata']['chords_2_1']} {match['metadata']['chords_2_2']} {match['metadata']['chords_2_3']} {match['metadata']['chords_2_4']}")
 
-        lyrics_result = index.query(vector=theme_embedding, top_k=5, include_metadata=True)
+            # Crear el embedding de la nueva query
+            lyrics_query = f"Give me a similar theme song to {input_data['theme'][0]}"
+            theme_embedding = client.embeddings.create(
+            model="text-embedding-3-small",
+            input=lyrics_query
+            ).data[0].embedding
 
-        lyrics_matches = lyrics_result['matches']
+            lyrics_result = index.query(vector=theme_embedding, top_k=5, include_metadata=True)
 
-        lyrics_list = []  # Crear una lista vacía para almacenar los textos
-        
+            lyrics_matches = lyrics_result['matches']
 
-        for match in lyrics_matches:
-            # Agregar cada texto generado a la lista
-            lyrics_list.append(f"Lyrics: {match['metadata']['theme']}")
-        lyrics_list.append(df['theme'])
-        
-        for match in lyrics_matches:
-            # Agregar cada texto generado a la lista
-            print(f"Lyrics: {match['metadata']['theme']} {match['id']} Score: {match['score']}")
+            lyrics_list = []  # Crear una lista vacía para almacenar los textos
+            
 
-        st.markdown("### 🎤 Nueva canción basada en tus preferencias")
-        nueva_cancion = create_song(lyrics_list, chord_wheels, details)
+            for match in lyrics_matches:
+                # Agregar cada texto generado a la lista
+                lyrics_list.append(f"Lyrics: {match['metadata']['theme']}")
+            lyrics_list.append(df['theme'])
+            
+            for match in lyrics_matches:
+                # Agregar cada texto generado a la lista
+                print(f"Lyrics: {match['metadata']['theme']} {match['id']} Score: {match['score']}")
+            
 
-        st.markdown(nueva_cancion)
+            st.markdown("### 🎤 Nueva canción basada en tus preferencias")
+            nueva_cancion = create_song(lyrics_list, chord_wheels, details)
+
+            st.markdown(nueva_cancion)
+
+            tempo_message_placeholder.empty()
 
     
 if __name__ == '__main__':
