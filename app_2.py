@@ -373,14 +373,17 @@ def main():
             for match in lyrics_matches:
                 # Agregar cada texto generado a la lista
                 print(f"Lyrics: {match['metadata']['theme']} {match['id']} Score: {match['score']}")
+
+            st.write("")
             
+            tempo_message_placeholder.empty()
 
-            st.markdown("### 🎤 Nueva canción basada en tus preferencias")
+            
             nueva_cancion = create_song(lyrics_list, chord_wheels, details)
-
+            st.markdown("### 🎤 Nueva canción basada en tus preferencias")
             st.markdown(nueva_cancion)
 
-            tempo_message_placeholder.empty()
+            
 
     
 if __name__ == '__main__':
