@@ -79,20 +79,20 @@ def main():
     st.markdown("""
     <style>
 
-    @import url('https://fonts.googleapis.com/css2?family=Prata&family=SUSE:wght@100..800&family=Space+Grotesk:wght@300..700&display=swap');
+    @import url(https://db.onlinewebfonts.com/c/a75f27d09ed7c4408bc52600d0fbcfa9?family=Glock+Grotesque);
 
     .custom-title {
-        font-family: "Space Grotesk", sans-serif;
+        font-family: "Glock Grotesque", sans-serif;
         font-optical-sizing: auto;
-        font-size: 54px;
-        font-weight:600;
+        font-size: 60px;
+        font-weight:800;
         color: #333;
     }
     </style>
     """, unsafe_allow_html=True)
 
     # Usar el estilo CSS personalizado en el título
-    st.markdown('<h1 class="custom-title">🎵 Song-starter 🎵</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="custom-title">Song-starter🎵</h1>', unsafe_allow_html=True)
     st.markdown("##### Crea nuevas canciones inspiradas en tus referencias")
 
 
