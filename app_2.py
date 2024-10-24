@@ -376,11 +376,13 @@ def main():
 
             st.write("")
             
-            tempo_message_placeholder.empty()
             
-            nueva_cancion = create_song(lyrics_list, chord_wheels, details)
-            st.markdown("### 🎤 Nueva canción basada en tus referencias")
-            st.markdown(nueva_cancion)
+            
+            
+        nueva_cancion = create_song(lyrics_list, chord_wheels, details)
+        tempo_message_placeholder.empty()
+        st.markdown("### 🎤 Nueva canción basada en tus referencias")
+        st.markdown(nueva_cancion)
 
             
 
