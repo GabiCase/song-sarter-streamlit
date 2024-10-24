@@ -78,8 +78,10 @@ def main():
     # Título principal de la app
     st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
-    
+
+
+    @import url('https://fonts.googleapis.com/css2?family=Prata&family=SUSE:wght@100..800&display=swap');
+
     .custom-title {
         font-family: 'Roboto', sans-serif;
         font-size: 40px;
