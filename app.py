@@ -338,12 +338,12 @@ def main():
             diff_chord_1= input_data['diff_chords_1_numeric'].iloc[0]
 
             chords_query = f"A song with a similar progession and distance (diff) in chords to {input_data['chords_1'][0]},y diff chords {diff_chord_2},{diff_chord_1}."
-            theme_embedding = client.embeddings.create(
+            chords_embedding = client.embeddings.create(
             model="text-embedding-3-small",
             input=chords_query
             ).data[0].embedding
 
-            chords_query = index.query(vector=theme_embedding, top_k=5, include_metadata=True)
+            chords_query = index.query(vector=chords_embedding, top_k=5, include_metadata=True)
 
             chords_query_ = chords_query['matches']
 
@@ -368,7 +368,8 @@ def main():
             for match in lyrics_matches:
                 # Agregar cada texto generado a la lista
                 lyrics_list.append(f"Lyrics: {match['metadata']['theme']}")
-            lyrics_list.append(df['theme'])
+
+            lyrics_list.append(input_data['theme'][0])
             
             for match in lyrics_matches:
                 # Agregar cada texto generado a la lista
