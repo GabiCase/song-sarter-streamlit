@@ -358,7 +358,7 @@ def main():
             input=lyrics_query
             ).data[0].embedding
 
-            lyrics_result = index.query(vector=theme_embedding, top_k=5, include_metadata=True)
+            lyrics_result = index.query(vector=theme_embedding, top_k=3, include_metadata=True)
 
             lyrics_matches = lyrics_result['matches']
 
