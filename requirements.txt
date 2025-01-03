@@ -1,5 +1,5 @@
 python-dotenv == 0.21.0
-openai == 1.51.2
+openai == 1.55.3
 spotipy == 2.24.0
 pinecone-client == 5.0.1
 googleapis-common-protos==1.65.0
